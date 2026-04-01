@@ -10,6 +10,7 @@ A lightweight trader-focused web portal to:
 ## Run locally
 
 Open `index.html` in a modern browser.
+Open `requirements.html` to view a dedicated requirements/spec page.
 
 > For best local folder save support, use Chromium-based browsers (File System Access API).
 
@@ -23,6 +24,8 @@ The importer accepts flexible names (case-insensitive), including:
 - `Exit price`
 - `ProfitLoss percentage` / `P/L%`
 - `Reason for trade`
+
+`Profit/Loss %` is auto-calculated from entry and exit prices during manual entry.
 
 
 ## Python server (optional)

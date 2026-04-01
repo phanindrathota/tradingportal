@@ -15,6 +15,7 @@
       <p>Track trades, reasons, and P/L with day, week, and year insights.</p>
     </div>
     <div class="header-actions">
+      <a class="button secondary" href="requirements.html">Requirements</a>
       <label class="button secondary" for="excelInput">Import Excel/CSV</label>
       <input id="excelInput" type="file" accept=".xlsx,.xls,.csv" hidden />
       <button id="saveLocalBtn" class="button">Save to Local Folder</button>
@@ -50,7 +51,7 @@
           </label>
           <label>
             Profit/Loss %
-            <input type="number" id="plPercent" step="0.01" required />
+            <input type="number" id="plPercent" step="0.01" readonly />
           </label>
         </div>
 

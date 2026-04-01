@@ -38,6 +38,8 @@ init();
 function init() {
   elements.tradeForm.addEventListener('submit', onFormSubmit);
   elements.resetBtn.addEventListener('click', resetForm);
+  elements.entryPrice.addEventListener('input', recalculatePlPercent);
+  elements.exitPrice.addEventListener('input', recalculatePlPercent);
   elements.yearFilter.addEventListener('change', render);
   elements.weekFilter.addEventListener('change', render);
   elements.dayFilter.addEventListener('change', render);
@@ -59,12 +61,12 @@ function onFormSubmit(event) {
     ticker: elements.ticker.value.trim().toUpperCase(),
     entryPrice: toNum(elements.entryPrice.value),
     exitPrice: toNum(elements.exitPrice.value),
-    plPercent: toNum(elements.plPercent.value),
+    plPercent: calculatePlPercent(elements.entryPrice.value, elements.exitPrice.value),
     reason: elements.reason.value.trim(),
   };
 
   if (!payload.date || !payload.ticker || Number.isNaN(payload.plPercent)) {
-    alert('Date, ticker, and P/L % are required.');
+    alert('Date, ticker, entry price, and exit price are required.');
     return;
   }
 
@@ -86,6 +88,7 @@ function resetForm() {
   elements.tradeId.value = '';
   elements.formTitle.textContent = 'Add Trade';
   elements.submitBtn.textContent = 'Add Trade';
+  elements.plPercent.value = '';
 }
 
 function editTrade(id) {
@@ -98,7 +101,7 @@ function editTrade(id) {
   elements.ticker.value = trade.ticker || '';
   elements.entryPrice.value = trade.entryPrice ?? '';
   elements.exitPrice.value = trade.exitPrice ?? '';
-  elements.plPercent.value = trade.plPercent ?? '';
+  elements.plPercent.value = fmtNum(trade.plPercent);
   elements.reason.value = trade.reason || '';
 
   elements.formTitle.textContent = 'Edit Trade';
@@ -285,14 +288,18 @@ function mapImportRow(raw) {
   const date = asDateString(norm.date || norm.trade_date || norm.tradedate);
   const expirationDate = asDateString(norm.expirationdate || norm.expiration_date || norm.expiry || '');
 
+  const entryPrice = toNum(norm.entryprice ?? norm.entry_price ?? norm.entry ?? '');
+  const exitPrice = toNum(norm.exitprice ?? norm.exit_price ?? norm.exit ?? '');
+  const importedPercent = toNum(norm['profitlosspercentage'] ?? norm['p/l%'] ?? norm.plpercent ?? norm.pl ?? '');
+
   return {
     id: crypto.randomUUID(),
     date,
     expirationDate,
     ticker: String(norm.ticker || norm.symbol || '').toUpperCase().trim(),
-    entryPrice: toNum(norm.entryprice ?? norm.entry_price ?? norm.entry ?? ''),
-    exitPrice: toNum(norm.exitprice ?? norm.exit_price ?? norm.exit ?? ''),
-    plPercent: toNum(norm['profitlosspercentage'] ?? norm['p/l%'] ?? norm.plpercent ?? norm.pl ?? 0),
+    entryPrice,
+    exitPrice,
+    plPercent: Number.isFinite(importedPercent) ? importedPercent : calculatePlPercent(entryPrice, exitPrice),
     reason: String(norm.reasonfortrade ?? norm.reason ?? '').trim(),
   };
 }
@@ -366,6 +373,23 @@ function sortTrades() {
 function toNum(value) {
   const n = Number(value);
   return Number.isFinite(n) ? n : NaN;
+}
+
+function fmtNum(value) {
+  const n = toNum(value);
+  return Number.isNaN(n) ? '' : n.toFixed(2);
+}
+
+function calculatePlPercent(entry, exit) {
+  const entryPrice = toNum(entry);
+  const exitPrice = toNum(exit);
+  if (Number.isNaN(entryPrice) || Number.isNaN(exitPrice) || entryPrice === 0) return NaN;
+  return ((exitPrice - entryPrice) / entryPrice) * 100;
+}
+
+function recalculatePlPercent() {
+  const pct = calculatePlPercent(elements.entryPrice.value, elements.exitPrice.value);
+  elements.plPercent.value = Number.isNaN(pct) ? '' : pct.toFixed(2);
 }
 
 function fmtPct(value) {
