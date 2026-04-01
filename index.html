@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trade Journal Portal</title>
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <h1>Trade Journal Portal</h1>
+      <p>Track trades, reasons, and P/L with day, week, and year insights.</p>
+    </div>
+    <div class="header-actions">
+      <a class="button secondary" href="requirements.html">Requirements</a>
+      <label class="button secondary" for="excelInput">Import Excel/CSV</label>
+      <input id="excelInput" type="file" accept=".xlsx,.xls,.csv" hidden />
+      <button id="saveLocalBtn" class="button">Save to Local Folder</button>
+      <button id="exportJsonBtn" class="button secondary">Export JSON</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="card form-card">
+      <h2 id="formTitle">Add Trade</h2>
+      <form id="tradeForm" autocomplete="off">
+        <input type="hidden" id="tradeId" />
+        <div class="form-grid">
+          <label>
+            Date
+            <input type="date" id="date" required />
+          </label>
+          <label>
+            Expiration Date
+            <input type="date" id="expirationDate" />
+          </label>
+          <label>
+            Ticker
+            <input type="text" id="ticker" placeholder="AAPL" required maxlength="12" />
+          </label>
+          <label>
+            Entry Price
+            <input type="number" id="entryPrice" step="0.0001" required />
+          </label>
+          <label>
+            Exit Price
+            <input type="number" id="exitPrice" step="0.0001" required />
+          </label>
+          <label>
+            Profit/Loss %
+            <input type="number" id="plPercent" step="0.01" readonly />
+          </label>
+        </div>
+
+        <label>
+          Reason for Trade
+          <textarea id="reason" rows="3" placeholder="Setup, catalyst, risk plan..." required></textarea>
+        </label>
+
+        <div class="form-actions">
+          <button type="submit" class="button" id="submitBtn">Add Trade</button>
+          <button type="button" class="button secondary" id="resetBtn">Clear</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card metrics-card">
+      <h2>Performance Overview</h2>
+      <div class="metrics">
+        <article>
+          <h3>Day</h3>
+          <p id="dayPnL">0.00%</p>
+        </article>
+        <article>
+          <h3>Week</h3>
+          <p id="weekPnL">0.00%</p>
+        </article>
+        <article>
+          <h3>Year</h3>
+          <p id="yearPnL">0.00%</p>
+        </article>
+        <article>
+          <h3>Running Total</h3>
+          <p id="runningTotal">0.00%</p>
+        </article>
+      </div>
+
+      <div class="filters">
+        <label>
+          Year
+          <select id="yearFilter"><option value="all">All</option></select>
+        </label>
+        <label>
+          Week
+          <select id="weekFilter"><option value="all">All</option></select>
+        </label>
+        <label>
+          Day
+          <input type="date" id="dayFilter" />
+        </label>
+        <button id="clearFiltersBtn" class="button secondary">Clear Filters</button>
+      </div>
+    </section>
+
+    <section class="card table-card">
+      <div class="table-head">
+        <h2>Trade Logs</h2>
+        <p id="tradeCount">0 trades</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Expiry</th>
+              <th>Ticker</th>
+              <th>Entry</th>
+              <th>Exit</th>
+              <th>P/L %</th>
+              <th>Running Total %</th>
+              <th>Reason</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tradeTableBody">
+            <tr>
+              <td colspan="9" class="empty-state">No trades logged yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
