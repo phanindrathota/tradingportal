@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trade Portal Requirements</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <h1>Trade Portal Requirements</h1>
+      <p>Functional and data requirements for the trading journal workflow.</p>
+    </div>
+    <div class="header-actions">
+      <a class="button" href="index.html">Back to Portal</a>
+    </div>
+  </header>
+
+  <main class="layout" style="grid-template-columns: 1fr;">
+    <section class="card">
+      <h2>Core Functional Requirements</h2>
+      <ul>
+        <li>Manual trade entry form with required fields and validation.</li>
+        <li>Editable and removable trade logs.</li>
+        <li>Auto-calculation of Profit/Loss percentage from Entry/Exit prices.</li>
+        <li>Profit/Loss color coding (green for wins, red for losses).</li>
+        <li>Performance summaries for Day, Week, Year, and Running Total.</li>
+        <li>Filtering by Year, Week, and specific Day.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Data Fields</h2>
+      <ul>
+        <li>Date</li>
+        <li>Expiration Date</li>
+        <li>Ticker</li>
+        <li>Entry Price</li>
+        <li>Exit Price</li>
+        <li>Profit/Loss Percentage</li>
+        <li>Running Total Profit Value</li>
+        <li>Reason for Trade</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Import / Export / Persistence Requirements</h2>
+      <ul>
+        <li>Import from Excel/CSV.</li>
+        <li>JSON export of trade logs.</li>
+        <li>Save logs to local folder using browser file APIs when available.</li>
+        <li>Persist logs in browser localStorage.</li>
+        <li>Optional Python local server API: <code>GET/POST /api/trades</code>.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
