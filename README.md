@@ -23,3 +23,16 @@ The importer accepts flexible names (case-insensitive), including:
 - `Exit price`
 - `ProfitLoss percentage` / `P/L%`
 - `Reason for trade`
+
+
+## Python server (optional)
+
+If you want a Python entrypoint, run:
+
+```bash
+python3 server.py --host 127.0.0.1 --port 8000
+```
+
+API endpoints:
+- `GET /api/trades` -> returns saved trades from `data/trades.json`
+- `POST /api/trades` -> saves an array of trades to `data/trades.json`
