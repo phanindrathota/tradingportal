@@ -149,7 +149,7 @@ function renderTable(trades) {
         <td>${fmtPrice(trade.entryPrice)}</td>
         <td>${fmtPrice(trade.exitPrice)}</td>
         <td class="${pnlClass}">${fmtPct(trade.plPercent)}</td>
-        <td class="${trade.runningTotal >= 0 ? 'value-win' : 'value-loss'}">${fmtPct(trade.runningTotal)}</td>
+        <td class="${trade.runningTotalValue >= 0 ? 'value-win' : 'value-loss'}">${fmtCurrency(trade.runningTotalValue)}</td>
         <td>${escapeHtml(trade.reason || '-')}</td>
         <td>
           <div class="action-buttons">
@@ -171,7 +171,7 @@ function renderTable(trades) {
 }
 
 function renderMetrics(filteredTrades) {
-  const runningTotal = filteredTrades.reduce((sum, trade) => sum + toNum(trade.plPercent), 0);
+  const runningTotalValue = filteredTrades.reduce((sum, trade) => sum + calculatePnlValue(trade.entryPrice, trade.exitPrice), 0);
   const now = new Date();
   const currentDay = now.toISOString().slice(0, 10);
   const currentWeek = isoWeekKey(currentDay);
@@ -189,7 +189,7 @@ function renderMetrics(filteredTrades) {
     .filter((trade) => trade.date?.slice(0, 4) === currentYear)
     .reduce((sum, trade) => sum + toNum(trade.plPercent), 0);
 
-  setMetric(elements.runningTotal, runningTotal);
+  setMetricCurrency(elements.runningTotal, runningTotalValue);
   setMetric(elements.dayPnL, dayPnL);
   setMetric(elements.weekPnL, weekPnL);
   setMetric(elements.yearPnL, yearPnL);
@@ -197,6 +197,12 @@ function renderMetrics(filteredTrades) {
 
 function setMetric(el, value) {
   el.textContent = fmtPct(value);
+  el.classList.toggle('value-win', value >= 0);
+  el.classList.toggle('value-loss', value < 0);
+}
+
+function setMetricCurrency(el, value) {
+  el.textContent = fmtCurrency(value);
   el.classList.toggle('value-win', value >= 0);
   el.classList.toggle('value-loss', value < 0);
 }
@@ -241,12 +247,12 @@ function populateWeekFilter() {
 }
 
 function computeRunningTotals(trades) {
-  let total = 0;
+  let totalValue = 0;
   return [...trades]
     .sort((a, b) => (a.date > b.date ? 1 : -1))
     .map((trade) => {
-      total += toNum(trade.plPercent);
-      return { ...trade, runningTotal: total };
+      totalValue += calculatePnlValue(trade.entryPrice, trade.exitPrice);
+      return { ...trade, runningTotalValue: totalValue };
     })
     .sort((a, b) => (a.date < b.date ? 1 : -1));
 }
@@ -387,6 +393,13 @@ function calculatePlPercent(entry, exit) {
   return ((exitPrice - entryPrice) / entryPrice) * 100;
 }
 
+function calculatePnlValue(entry, exit) {
+  const entryPrice = toNum(entry);
+  const exitPrice = toNum(exit);
+  if (Number.isNaN(entryPrice) || Number.isNaN(exitPrice)) return 0;
+  return exitPrice - entryPrice;
+}
+
 function recalculatePlPercent() {
   const pct = calculatePlPercent(elements.entryPrice.value, elements.exitPrice.value);
   elements.plPercent.value = Number.isNaN(pct) ? '' : pct.toFixed(2);
@@ -397,6 +410,11 @@ function fmtPct(value) {
 }
 
 function fmtPrice(value) {
+  const n = toNum(value);
+  return Number.isNaN(n) ? '-' : `$${n.toFixed(2)}`;
+}
+
+function fmtCurrency(value) {
   const n = toNum(value);
   return Number.isNaN(n) ? '-' : `$${n.toFixed(2)}`;
 }

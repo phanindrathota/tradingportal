@@ -24,6 +24,7 @@ The importer accepts flexible names (case-insensitive), including:
 - `Exit price`
 - `ProfitLoss percentage` / `P/L%`
 - `Reason for trade`
+- Running total is shown as cumulative **value** (currency), not percentage.
 
 `Profit/Loss %` is auto-calculated from entry and exit prices during manual entry.
 
